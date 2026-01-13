@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=volgan_with_modified_matrix_array
+#SBATCH --job-name=volgan_with_heston
 #SBATCH --array=0-4
 #SBATCH --time=4:00:00
 #SBATCH --mem=110G
@@ -13,6 +13,8 @@ JOB_DIR="output_${SLURM_JOB_ID}/task_${SLURM_ARRAY_TASK_ID}"
 mkdir -p "$JOB_DIR"
 
 module load python/3.11
+
+source /home/cjcomp/projects/def-ankush/Diffusion_CJ/cj_venv/bin/activate
 
 cd /home/cjcomp/projects/def-ankush/volganCode/
 
