@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=volgan_with_heston
 #SBATCH --array=0-4
-#SBATCH --time=4:00:00
+#SBATCH --time=7:00:00
 #SBATCH --mem=110G
 #SBATCH --cpus-per-task=2
 #SBATCH --mail-type=ALL
