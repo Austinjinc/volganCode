@@ -14,7 +14,7 @@ mkdir -p "$JOB_DIR"
 
 module load python/3.11
 
-cd /home/cjcomp/heston_volgan_project
+cd /home/cjcomp/projects/def-ankush/volganCode/
 
 # Save the Python and submit script in the job folder for reproducibility
 mkdir -p "output_${SLURM_JOB_ID}"

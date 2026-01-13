@@ -49,7 +49,7 @@ log_iv_inc_t = log_iv_t - log_iv_tm1
 tr = 0.95         # proportion of data used for training
 noise_dim = 32    # dimension of latent noise vector
 hidden_dim = 16   # width of generator/discriminator hidden layers
-n_epochs = 2  # number of epochs for the main training loop
+n_epochs = 10000  # number of epochs for the main training loop
 n_grad = 25       # number of gradient-matching iterations
 
 device = "cpu"
