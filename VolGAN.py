@@ -600,30 +600,46 @@ def DataTrainValTest(datapath,surfacepath, tr, vl, device = 'cpu'):
     condition_test = condition_tensor[int((tr + vl) * n):, :]
     return true_train, true_val, true_test, condition_train, condition_val, condition_test,  m_in,sigma_in, m_out, sigma_out, dates_t,  m, tau, ms, taus
 
-def DataTrainTest(datapath,surfacepath, tr, device = 'cpu'):
+def DataTrainTest(datapath, surfacepath, tr, truncate_start=7000, device='cpu'):
     """
     function to split the data into train, test
-    tr are the proportions to use for testing
+    tr: proportion of data used for training (e.g., 0.8 for 80% training)
+    truncate_start: number of initial samples to drop from the training set
     """
-    true, condition, m_in,sigma_in, m_out, sigma_out, dates_t,  m, tau, ms, taus = DataPreprocesssing(datapath, surfacepath)
-    data_tt = torch.from_numpy(m_in)
-    m_in = data_tt.to(torch.float).to(device)
-    data_tt = torch.from_numpy(m_out)
-    m_out = data_tt.to(torch.float).to(device)
-    data_tt = torch.from_numpy(sigma_in)
-    sigma_in = data_tt.to(torch.float).to(device)
-    data_tt = torch.from_numpy(sigma_out)
-    sigma_out = data_tt.to(torch.float).to(device)
-    n = true.shape[0]
-    data_tt = torch.from_numpy(true)
-    true_tensor = data_tt.to(torch.float).to(device)
-    data_tt = torch.from_numpy(condition)
-    condition_tensor = data_tt.to(torch.float).to(device)
-    true_train = true_tensor[0:int(tr * n), :]
-    true_test = true_tensor[int(tr * n):, :]
-    condition_train = condition_tensor[0:int(tr * n), :]
-    condition_test = condition_tensor[int(tr * n):, :]
-    return true_train, true_test, condition_train,  condition_test,  m_in,sigma_in, m_out, sigma_out, dates_t,  m, tau, ms, taus
+    # 1. Load and preprocess data
+    true, condition, m_in, sigma_in, m_out, sigma_out, dates_t, m, tau, ms, taus = DataPreprocesssing(datapath, surfacepath)
+    
+    n = true.shape[0] # Total number of samples
+
+    # 2. Convert to tensors
+    # (Grouped conversions for cleaner code, functionally identical to your snippet)
+    true_tensor = torch.from_numpy(true).to(torch.float).to(device)
+    condition_tensor = torch.from_numpy(condition).to(torch.float).to(device)
+    
+    # We don't slice these, but we convert them as requested
+    m_in = torch.from_numpy(m_in).to(torch.float).to(device)
+    m_out = torch.from_numpy(m_out).to(torch.float).to(device)
+    sigma_in = torch.from_numpy(sigma_in).to(torch.float).to(device)
+    sigma_out = torch.from_numpy(sigma_out).to(torch.float).to(device)
+
+    # 3. Calculate the Split Point
+    # This determines where the Training set ends and Testing set begins
+    split_idx = int(tr * n) 
+
+    # 4. Create Splits with Truncation
+    # Train: Start at 'truncate_start' -> End at 'split_idx'
+    true_train = true_tensor[truncate_start:split_idx, :]
+    condition_train = condition_tensor[truncate_start:split_idx, :]
+    
+    # Test: Start at 'split_idx' -> End (remains untouched)
+    true_test = true_tensor[split_idx:, :]
+    condition_test = condition_tensor[split_idx:, :]
+
+    # Safety check (optional but recommended)
+    if truncate_start >= split_idx:
+        print(f"Warning: Truncation ({truncate_start}) is larger than training set size ({split_idx}). Training set is empty!")
+
+    return true_train, true_test, condition_train, condition_test, m_in, sigma_in, m_out, sigma_out, dates_t, m, tau, ms, taus
 
 def GradientMatching(gen,gen_opt,disc,disc_opt,criterion,condition_train,true_train,m,tau,ms,taus,n_grad,lrg,lrd,batch_size,noise_dim,device, lk = 9, lt = 9):
     """
