@@ -1053,7 +1053,7 @@ def TrainLoopNoVal(alpha,beta,gen,gen_opt,disc,disc_opt,criterion,condition_trai
 
 def VolGAN(datapath,surfacepath, tr, noise_dim = 16, hidden_dim = 8, n_epochs = 1000,n_grad = 100, lrg = 0.0001, lrd = 0.0001, batch_size = 100, device = 'cpu'):
    
-    true_train, true_test, condition_train, condition_test,  m_in,sigma_in, m_out, sigma_out, dates_t,  m, tau, ms, taus = DataTrainTest(datapath,surfacepath, tr, device)
+    true_train, true_test, condition_train, condition_test,  m_in,sigma_in, m_out, sigma_out, dates_t,  m, tau, ms, taus = DataTrainTest(datapath=datapath,surfacepath=surfacepath, tr=tr, device=device)
     gen = Generator(noise_dim=noise_dim,cond_dim=condition_train.shape[1], hidden_dim=hidden_dim,output_dim=true_train.shape[1],mean_in = m_in, std_in = sigma_in, mean_out = m_out, std_out = sigma_out)
     gen.to(device)
     m_disc = torch.cat((m_in,m_out),dim=-1)

@@ -75,9 +75,9 @@ device = "cpu"
     ms,
     taus
 ) = VolGAN.VolGAN(
-    datapath,
-    surfacepath,
-    tr,
+    datapath=datapath,
+    surfacepath=surfacepath,
+    tr=tr,
     noise_dim=noise_dim,
     hidden_dim=hidden_dim,
     n_epochs=n_epochs,
